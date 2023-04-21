@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".UpdateActivity">
+
+
+    <TextView
+        android:id="@+id/state_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="실시간 데이터 정보"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/key_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="keyValue"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/no_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="번호"
+
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="이름"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/age_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="나이"
+        android:inputType="number" />
+
+
+    <Button
+        android:id="@+id/update_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="수정"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/list_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="사용자 목록"
+        android:textSize="25sp" />
+
+</LinearLayout>

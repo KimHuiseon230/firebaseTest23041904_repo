@@ -15,6 +15,10 @@ class SubActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         binding.updateBtn.setOnClickListener(this)
         binding.listBtn.setOnClickListener(this)
+        binding.pictureBtn.setOnClickListener(this)
+        binding.sharedBtn.setOnClickListener(this)
+
+
     }
 
     override fun onClick(v: View?) {
@@ -43,7 +47,19 @@ class SubActivity : AppCompatActivity(), View.OnClickListener {
                 val intent = Intent(this@SubActivity, ListActivity::class.java)
                 startActivity(intent)
             }
+            R.id.pictureBtn ->{
+                val intent = Intent(this@SubActivity, PictureActivity::class.java)
+                startActivity(intent)
 
+            }
+            R.id.sharedBtn ->{
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, data)
+                }
+                startActivity(intent)
+
+            }
         }
     }
 }

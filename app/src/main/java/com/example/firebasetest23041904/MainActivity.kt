@@ -13,6 +13,7 @@ import com.example.firebasetest23041904.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -23,11 +24,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //구글로그인 요청을 하면 결과 값을 리턴 콜백처리
+        //구글 로그인 요청을 하면 결과 값을 리턴 콜백처리
         requestLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 try {
-                    // 구글로그인 결과내용
+                    // 구글 로그인 결과내용
                     val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
                     //구글에서 받은 위임장
                     val account = task.getResult(ApiException::class.java)
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                 } catch (e: ApiException) {
-                    //구글로그인 인증 API 예외발생
+                    //구글 로그인 인증 API 예외 발생
                     binding.authMainTextView.text = "구글로그인 인증 API 예외발생"
                     Toast.makeText(this@MainActivity, "구글 로그인 API 실패", Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "${e.printStackTrace()}")
@@ -75,44 +76,53 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.registerBtn -> {
                 val email = binding.authEmailEditView.text.toString()
                 val password = binding.authPasswordEditView.text.toString()
-                //파이어베이스에 이메일과 패스워드 통해서 회원가입 신청
-                MyApplication.firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        binding.authEmailEditView.text.clear()
-                        binding.authPasswordEditView.text.clear()
-                        if (task.isSuccessful) {
-                            //사용자메일로 이메일 검증상태 전송진행
-                            MyApplication.firebaseAuth.currentUser?.sendEmailVerification()
-                                ?.addOnCompleteListener { sendTask ->
-                                    if (sendTask.isSuccessful) {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "파이어베이스 회원가입 성공 전송메일 확인",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        binding.authMainTextView.text = "파이어베이스 가입 성공"
-                                        changeStateButton("회원가입")
-                                    } else {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "파이어베이스 전송메일 발송 실패",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        binding.authMainTextView.text = "파이어베이스 가입 발송 실패"
-                                        changeStateButton("처음")
+                try {
+                    // 파이어베이스에 이메일과 패스워드 통해서 회원가입 신청
+                    MyApplication.firebaseAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this) { task ->
+                            binding.authEmailEditView.text.clear()
+                            binding.authPasswordEditView.text.clear()
+                            if (task.isSuccessful) {
+                                // 사용자메일로 이메일 검증상태 전송진행
+                                MyApplication.firebaseAuth.currentUser?.sendEmailVerification()
+                                    ?.addOnCompleteListener { sendTask ->
+                                        if (sendTask.isSuccessful) {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "파이어베이스 회원가입 성공 전송메일 확인",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            binding.authMainTextView.text = "파이어베이스 가입 성공"
+                                            changeStateButton("회원가입")
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "파이어베이스 전송메일 발송 실패",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            binding.authMainTextView.text = "파이어베이스 가입 발송 실패"
+                                            changeStateButton("처음")
+                                        }
                                     }
-                                }
-                        } else {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "파이어베이스 메일, 패스워드 인증 실패",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            binding.authMainTextView.text = "파이어베이스 인증 실패"
-                            changeStateButton("처음")
+                            } else {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "파이어베이스 메일, 패스워드 인증 실패",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                binding.authMainTextView.text = "파이어베이스 인증 실패"
+                                changeStateButton("처음")
+                            }
                         }
-                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "회원가입에 실패하였습니다. 다시 시도해주세요.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
+
             // 회원 삭제
             R.id.deleteBtn -> {
                 val user = MyApplication.firebaseAuth.currentUser
@@ -139,23 +149,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.loginBtn -> {
                 val email = binding.authEmailEditView.text.toString()
                 val password = binding.authPasswordEditView.text.toString()
-                MyApplication.firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        binding.authEmailEditView.text.clear()
-                        binding.authPasswordEditView.text.clear()
-                        if (task.isSuccessful) {
-                            if (MyApplication.checkAuth()) {
-                                MyApplication.email = email
-                                binding.authMainTextView.text = "파이어베이스 로그인 성공"
-                                changeStateButton("로그인")
-                                //인텐트
+                try {
+                    MyApplication.firebaseAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this) { task ->
+                            binding.authEmailEditView.text.clear()
+                            binding.authPasswordEditView.text.clear()
+                            if (task.isSuccessful) {
+                                if (MyApplication.checkAuth()) {
+                                    MyApplication.email = email
+                                    binding.authMainTextView.text = "파이어베이스 로그인 성공"
+                                    changeStateButton("로그인")
+                                    //인텐트
+                                } else {
+                                    binding.authMainTextView.text = "파이어베이스 로그인 실패"
+                                }
                             } else {
                                 binding.authMainTextView.text = "파이어베이스 로그인 실패"
                             }
-                        } else {
-                            binding.authMainTextView.text = "파이어베이스 로그인 실패"
                         }
-                    }
+                } catch (e: Exception) {
+                    Toast.makeText(applicationContext,"이메일과 비밀번호를 제대로 입력해주세요.",Toast.LENGTH_SHORT).show()
+                }
             }
             R.id.logoutBtn -> {
                 MyApplication.firebaseAuth.signOut()

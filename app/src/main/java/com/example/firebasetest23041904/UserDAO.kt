@@ -10,13 +10,11 @@ class UserDAO {
     init {
         // 실시간 DB 연결
         var db= FirebaseDatabase.getInstance()
-        //user 테이블 생성 -> 그것을 가리킴
-        databaseReference =db.getReference("user")
+        databaseReference =db.getReference("user") //user 테이블 생성
 
     }
     //insert INTO user values(_,_,_,_)
-    fun fbInsert(user:User?): Task<Void>
-    {
+    fun fbInsert(user:User?): Task<Void> {
         return databaseReference!!.push().setValue(user)
     }
     fun userSelect():Query?{

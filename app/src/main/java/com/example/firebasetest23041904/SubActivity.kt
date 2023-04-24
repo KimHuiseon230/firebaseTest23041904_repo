@@ -17,7 +17,13 @@ class SubActivity : AppCompatActivity(), View.OnClickListener {
         binding.listBtn.setOnClickListener(this)
         binding.pictureBtn.setOnClickListener(this)
         binding.sharedBtn.setOnClickListener(this)
+        binding.tvToken.setOnClickListener(this)
 
+        /** FCM설정, Token값 가져오기 */
+        MyFirebaseMessagingService().getFirebaseToken()
+
+        /** DynamicLink 수신확인 */
+        initDynamicLink()
 
     }
 
@@ -58,8 +64,18 @@ class SubActivity : AppCompatActivity(), View.OnClickListener {
                     putExtra(Intent.EXTRA_TEXT, data)
                 }
                 startActivity(intent)
-
             }
+        }
+    }
+    private fun initDynamicLink() {
+        val dynamicLinkData = intent.extras
+        if (dynamicLinkData != null) {
+            var dataStr = "DynamicLink 수신받은 값\n"
+            for (key in dynamicLinkData.keySet()) {
+                dataStr += "key: $key / value: ${dynamicLinkData.getString(key)}\n"
+            }
+
+            binding.tvToken.text = dataStr
         }
     }
 }

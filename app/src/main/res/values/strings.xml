@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">firebaseTest23041904</string>
+    <string name="msg_token_fmt" trnaslatable="false">토큰:%s</string>
 </resources>

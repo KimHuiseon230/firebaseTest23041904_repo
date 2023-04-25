@@ -21,7 +21,12 @@
         android:layout_weight="1"
         android:hint="내용 입력해 주세요"
         android:gravity="left|top"/>
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
     <Button
         android:id="@+id/btnPictureSave"
         android:layout_width="match_parent"
